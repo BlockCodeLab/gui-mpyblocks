@@ -1,0 +1,6 @@
+mpyblocks.name: 電子積木
+
+mpyblocks.menubar.device: 設備
+mpyblocks.menubar.device.connect: 連接
+mpyblocks.menubar.device.disconnect: 斷開連接
+mpyblocks.menubar.device.sync: 同步腳本
