@@ -86,7 +86,20 @@ export default {
   tabs: [
     {
       ...blocksTab,
-      Content: () => <BlocksEditor generator={mpyGenerator} />,
+      Content: () => {
+        // 将小绿旗事件修改为程序开始事件
+        ScratchBlocks.Blocks['event_whenflagclicked'] = {
+          init() {
+            this.jsonInit({
+              message0: ScratchBlocks.Msg.EVENT_WHENPROGRAMSTART,
+              category: ScratchBlocks.Categories.event,
+              extensions: ['colours_event', 'shape_hat'],
+            });
+          },
+        };
+
+        return <BlocksEditor generator={mpyGenerator} />;
+      },
     },
   ].concat(
     DEBUG
