@@ -6,7 +6,7 @@ import { ScratchBlocks, MPYGenerator, blocksTab, codeReviewTab } from '@blockcod
 import { Text } from '@blockcode/core';
 import { BlocksEditor, CodeReview } from '@blockcode/blocks';
 import { DeviceIcon } from './commponents/device-menu/device-icon';
-// import { DeviceMenu } from './commponents/device-menu/device-menu';
+import { DeviceMenu } from './commponents/device-menu/device-menu';
 import { defaultProject } from './lib/default-project';
 
 const mpyGenerator = new MPYGenerator();
@@ -79,7 +79,7 @@ export default {
           defaultMessage="Device"
         />
       ),
-      Menu: () => {},
+      Menu: DeviceMenu,
     },
   ],
 

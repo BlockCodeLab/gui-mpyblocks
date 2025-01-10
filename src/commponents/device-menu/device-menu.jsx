@@ -1,69 +1,45 @@
-import { useLayout, useEditor } from '@blockcode/core';
-import { Text, Spinner, MenuSection, MenuItem } from '@blockcode/ui';
-import { connectDevice, checkDevice, checkFlashFree, writeFiles, configDevice } from '@blockcode/device-pyboard';
+import { nanoid } from '@blockcode/utils';
+import { useProjectContext, setAlert, delAlert, openPromptModal } from '@blockcode/core';
+import { MPYUtils } from '@blockcode/board';
+
+import { Spinner, Text, MenuSection, MenuItem } from '@blockcode/core';
 
 let downloadAlertId = null;
 
+const removeDownloading = () => {
+  delAlert(downloadAlertId);
+  downloadAlertId = null;
+};
+
+const downloadingAlert = (progress) => {
+  if (!downloadAlertId) {
+    downloadAlertId = nanoid();
+  }
+  if (progress < 100) {
+    setAlert({
+      id: downloadAlertId,
+      icon: <Spinner level="success" />,
+      message: (
+        <Text
+          id="arcade.alert.downloading"
+          defaultMessage="Downloading...{progress}%"
+          progress={progress}
+        />
+      ),
+    });
+  } else {
+    setAlert('downloadCompleted', { id: downloadAlertId });
+    setTimeout(removeDownloading, 2000);
+  }
+};
+
+const errorAlert = (err) => {
+  if (err === 'NotFoundError') return;
+  setAlert('connectionError', 1000);
+};
+
 export function DeviceMenu({ itemClassName }) {
-  const { createAlert, removeAlert, createPrompt } = useLayout();
-  const { key, name, fileList, assetList } = useEditor();
-
-  const downloadingAlert = (progress) => {
-    if (!downloadAlertId) {
-      downloadAlertId = `download.${Date.now()}`;
-    }
-    if (progress < 100) {
-      createAlert({
-        id: downloadAlertId,
-        icon: <Spinner level="success" />,
-        message: (
-          <Text
-            id="blocks.alert.downloading"
-            defaultMessage="Downloading...{progress}%"
-            progress={progress}
-          />
-        ),
-      });
-    } else {
-      createAlert({
-        id: downloadAlertId,
-        icon: null,
-        message: (
-          <Text
-            id="blocks.alert.downloadCompleted"
-            defaultMessage="Download completed."
-          />
-        ),
-      });
-      setTimeout(removeDownloading, 2000);
-    }
-  };
-
-  const removeDownloading = () => {
-    removeAlert(downloadAlertId);
-    downloadAlertId = null;
-  };
-
-  const errorAlert = (err) => {
-    if (err === 'NotFoundError') return;
-    createAlert(
-      {
-        message:
-          err === 'NotFoundError' ? (
-            <Text
-              id="blocks.alert.connectionCancel"
-              defaultMessage="Connection cancel."
-            />
-          ) : (
-            <Text
-              id="blocks.alert.connectionError"
-              defaultMessage="Connection error."
-            />
-          ),
-      },
-      1000,
-    );
-  };
+  const { key, files, assets } = useProjectContext();
 
   return (
     <>
@@ -82,32 +58,35 @@ export function DeviceMenu({ itemClassName }) {
 
             let currentDevice;
             try {
-              currentDevice = await connectDevice(deviceFilters || []);
+              currentDevice = await MPYUtils.connect([]);
             } catch (err) {
               errorAlert(err.name);
             }
             if (!currentDevice) return;
 
-            const checker = checkDevice(currentDevice).catch(() => {
+            const checker = MPYUtils.check(currentDevice).catch(() => {
               errorAlert();
               removeDownloading();
             });
 
-            const files = onBeforeDownload
-              ? onBeforeDownload({ key, name }, fileList, assetList)
-              : [].concat(fileList, assetList);
-            downloadingAlert(0);
+            const projectFiles = [].concat(files.value, assets.value).map((file) => ({
+              ...file,
+              id: file.id.startsWith('lib/')
+                ? file.id // 扩展的文件不放入项目文件夹
+                : `proj${key.value}/${file.id}`,
+            }));
 
+            downloadingAlert(0);
             try {
-              if (await checkFlashFree(currentDevice, files)) {
-                await writeFiles(currentDevice, files, downloadingAlert);
-                await configDevice(currentDevice, {
+              if (await MPYUtils.flashFree(currentDevice, projectFiles)) {
+                await MPYUtils.write(currentDevice, projectFiles, downloadingAlert);
+                await MPYUtils.config(currentDevice, {
                   'latest-project': key,
                 });
                 currentDevice.hardReset();
               } else {
-                createPrompt({
-                  title: deviceName || (
+                openPromptModal({
+                  title: (
                     <Text
                       id="blocks.menu.device.name"
                       defaultMessage="device"
@@ -131,8 +110,6 @@ export function DeviceMenu({ itemClassName }) {
           }}
         />
       </MenuSection>
-
-      {children}
     </>
   );
 }
