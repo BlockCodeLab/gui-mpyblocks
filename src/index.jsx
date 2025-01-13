@@ -11,6 +11,8 @@ import { defaultProject } from './lib/default-project';
 
 const mpyGenerator = new MPYGenerator();
 
+const handleExtensionsFilter = () => ['mpy'];
+
 export default {
   onNew() {
     return defaultProject;
@@ -98,7 +100,12 @@ export default {
           },
         };
 
-        return <BlocksEditor generator={mpyGenerator} />;
+        return (
+          <BlocksEditor
+            generator={mpyGenerator}
+            onExtensionsFilter={handleExtensionsFilter}
+          />
+        );
       },
     },
   ].concat(
