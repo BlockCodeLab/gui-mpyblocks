@@ -21,7 +21,7 @@ const downloadingAlert = (progress) => {
       icon: <Spinner level="success" />,
       message: (
         <Text
-          id="arcade.alert.downloading"
+          id="blocks.alert.downloading"
           defaultMessage="Downloading...{progress}%"
           progress={progress}
         />
@@ -72,41 +72,45 @@ export function DeviceMenu({ itemClassName }) {
             const projectFiles = [].concat(files.value, assets.value).map((file) => ({
               ...file,
               id: file.id.startsWith('lib/')
-                ? file.id // 扩展的文件不放入项目文件夹
+                ? file.id // 库文件不放入项目文件夹
                 : `proj${key.value}/${file.id}`,
             }));
 
             downloadingAlert(0);
+
             try {
-              if (await MPYUtils.flashFree(currentDevice, projectFiles)) {
+              // 检查空间
+              if (!(await MPYUtils.flashFree(currentDevice, projectFiles))) {
+                openPromptModal({
+                  title: (
+                    <Text
+                      id="blocks.menu.device.name"
+                      defaultMessage="Device"
+                    />
+                  ),
+                  label: (
+                    <Text
+                      id="blocks.downloadPrompt.flashOutSpace"
+                      defaultMessage="The flash is running out of space."
+                    />
+                  ),
+                });
+              }
+
+              // 开始下载
+              else {
                 await MPYUtils.write(currentDevice, projectFiles, downloadingAlert);
                 await MPYUtils.config(currentDevice, {
                   'latest-project': key,
                 });
                 currentDevice.hardReset();
-              } else {
-                openPromptModal({
-                  title: (
-                    <Text
-                      id="blocks.menu.device.name"
-                      defaultMessage="device"
-                    />
-                  ),
-                  label: (
-                    <Text
-                      id="blocks.alert.flashOutSpace"
-                      defaultMessage="The flash is running out of space."
-                    />
-                  ),
-                });
-                removeDownloading();
               }
             } catch (err) {
               errorAlert(err.name);
-              removeDownloading();
-            } finally {
-              checker.cancel();
             }
+
+            removeDownloading();
+            checker.cancel();
           }}
         />
       </MenuSection>
