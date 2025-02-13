@@ -5,8 +5,8 @@ import { ScratchBlocks, MPYGenerator, blocksTab, codeReviewTab } from '@blockcod
 
 import { Text } from '@blockcode/core';
 import { BlocksEditor, CodeReview } from '@blockcode/blocks';
-import { DeviceIcon } from './commponents/device-menu/device-icon';
-import { DeviceMenu } from './commponents/device-menu/device-menu';
+import { DeviceIcon } from './components/device-menu/device-icon';
+import { DeviceMenu } from './components/device-menu/device-menu';
 import { defaultProject } from './lib/default-project';
 
 const mpyGenerator = new MPYGenerator();
