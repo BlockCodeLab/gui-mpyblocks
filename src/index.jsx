@@ -11,7 +11,7 @@ import { defaultProject } from './lib/default-project';
 
 const mpyGenerator = new MPYGenerator();
 
-const handleExtensionsFilter = () => ['mpy', 'runtime'];
+const handleExtensionsFilter = () => ['runtime', 'device'];
 
 export default {
   onNew() {
