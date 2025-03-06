@@ -1,7 +1,7 @@
 import './l10n';
 
 import { svgAsDataUri } from '@blockcode/utils';
-import { ScratchBlocks, MPYGenerator, blocksTab, codeReviewTab } from '@blockcode/blocks';
+import { ScratchBlocks, MicroPythonGenerator, blocksTab, codeReviewTab } from '@blockcode/blocks';
 
 import { Text } from '@blockcode/core';
 import { BlocksEditor, CodeReview } from '@blockcode/blocks';
@@ -9,9 +9,9 @@ import { DeviceIcon } from './components/device-menu/device-icon';
 import { DeviceMenu } from './components/device-menu/device-menu';
 import { defaultProject } from './lib/default-project';
 
-const mpyGenerator = new MPYGenerator();
+const mpyGenerator = new MicroPythonGenerator();
 
-const handleExtensionsFilter = () => ['runtime', 'device'];
+const handleExtensionsFilter = () => ['device'];
 
 export default {
   onNew() {
@@ -88,25 +88,12 @@ export default {
   tabs: [
     {
       ...blocksTab,
-      Content: () => {
-        // 将小绿旗事件修改为程序开始事件
-        ScratchBlocks.Blocks['event_whenflagclicked'] = {
-          init() {
-            this.jsonInit({
-              message0: ScratchBlocks.Msg.EVENT_WHENPROGRAMSTART,
-              category: ScratchBlocks.Categories.event,
-              extensions: ['colours_event', 'shape_hat'],
-            });
-          },
-        };
-
-        return (
-          <BlocksEditor
-            generator={mpyGenerator}
-            onExtensionsFilter={handleExtensionsFilter}
-          />
-        );
-      },
+      Content: () => (
+        <BlocksEditor
+          generator={mpyGenerator}
+          onExtensionsFilter={handleExtensionsFilter}
+        />
+      ),
     },
   ].concat(
     DEBUG

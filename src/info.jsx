@@ -4,16 +4,16 @@ import featureImage from './feature.png';
 
 addLocalesMessages({
   en: {
-    'mpyblocks.name': 'Electronic Blocks',
-    'mpyblocks.description': 'Electronic world via building blocks.',
+    'mpyblocks.name': 'MicroPython Blocks',
+    'mpyblocks.description': 'MicroPython programming via blocks.',
   },
   'zh-Hans': {
-    'mpyblocks.name': '电子积木',
-    'mpyblocks.description': '用积木搭建的奇妙电子世界。',
+    'mpyblocks.name': 'MicroPython 积木',
+    'mpyblocks.description': '通过积木搭建 MicroPython 程序。',
   },
   'zh-Hant': {
-    'mpyblocks.name': '電子積木',
-    'mpyblocks.description': '用積木搭建的奇妙電子世界。',
+    'mpyblocks.name': 'MicroPython 積木',
+    'mpyblocks.description': '通過積木構建 MicroPython 程序。',
   },
 });
 
@@ -25,13 +25,13 @@ export default {
   name: (
     <Text
       id="mpyblocks.name"
-      defaultMessage="Electronic Blocks"
+      defaultMessage="MicroPython Blocks"
     />
   ),
   description: (
     <Text
       id="mpyblocks.description"
-      defaultMessage="Electronic world via building blocks."
+      defaultMessage="MicroPython programming via blocks."
     />
   ),
   blocksRequired: true,
