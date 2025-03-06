@@ -9,7 +9,7 @@ import { DeviceIcon } from './components/device-menu/device-icon';
 import { DeviceMenu } from './components/device-menu/device-menu';
 import { defaultProject } from './lib/default-project';
 
-const mpyGenerator = new MicroPythonGenerator();
+const generator = new MicroPythonGenerator();
 
 const handleExtensionsFilter = () => ['device'];
 
@@ -90,7 +90,8 @@ export default {
       ...blocksTab,
       Content: () => (
         <BlocksEditor
-          generator={mpyGenerator}
+          disableMonitor
+          generator={generator}
           onExtensionsFilter={handleExtensionsFilter}
         />
       ),
